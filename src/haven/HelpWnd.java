@@ -41,7 +41,7 @@ public class HelpWnd extends WindowX {
 	if(justclose) {
 	    this.close();
 	} else {
-	    this.wdgmsg("close");
+	    this.reqclose();
 	}
     }
 
