@@ -502,11 +502,10 @@ public class MapWnd extends WindowX implements Console.Directory {
 	view.markobjs();
 	if(visible) {
 	    if(mrefocus != null) {
-		for(Predicate<Marker> filter : Arrays.asList(pmarkers, smarkers)) {
-		    if(filter.test(mrefocus)) {
-			if(filter != mflt) {
-			    mflt = filter;
-			    markerseq = -1;
+		for (MarkerCategory cat : MarkerCategory.values()) {
+		    if(cat.filter.test(mrefocus)) {
+			if(mflt != cat.filter) {
+			    tool.categories.change(cat);
 			}
 			break;
 		    }
