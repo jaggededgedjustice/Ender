@@ -12,6 +12,7 @@ public class Equip {
     public static final Item SWORD = new Equip.Item("Sword", "/bronzesword", "/fyrdsword", "/hirdsword");
     public static final Item SHIELD = new Equip.Item("Shield", "/roundshield");
     public static final Item SPEAR = new Equip.Item("Spear", "/boarspear");
+    public static final Item TSACK = new Equip.Item("Traveller's Sack", "/travellerssack");
 
     //These items can't be placed into a belt
     private static final String[] FORBIDDEN = {

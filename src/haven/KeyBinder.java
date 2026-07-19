@@ -108,6 +108,7 @@ public class KeyBinder {
 	add(EQUIP_BOW);
 	add(EQUIP_SPEAR);
 	add(EQUIP_SWORD_N_BOARD);
+	add(EQUIP_T_SACKS);
 	
 	//Camera controls
 	add(KeyEvent.VK_ADD, NONE, CAM_ZOOM_IN);
