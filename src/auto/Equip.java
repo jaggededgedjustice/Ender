@@ -108,7 +108,10 @@ public class Equip {
 	    }
 
 	    SLOTS firstEquipped = GobTag.ofType(leftName, first.types) ? HAND_LEFT : GobTag.ofType(rightName, first.types) ? HAND_RIGHT : INVALID;
-	    SLOTS secondEquipped = GobTag.ofType(leftName, second.types) ? HAND_LEFT : GobTag.ofType(rightName, second.types) ? HAND_RIGHT : INVALID;
+	    SLOTS secondEquipped = GobTag.ofType(rightName, second.types) ? HAND_RIGHT : GobTag.ofType(leftName, second.types) ? HAND_LEFT : INVALID;
+	    if(first == second && firstEquipped == secondEquipped) {
+		secondEquipped = INVALID;
+	    }
 
 	    if(firstEquipped != INVALID && secondEquipped != INVALID) {
 		//both already equipped, nothing to do
@@ -116,44 +119,36 @@ public class Equip {
 		return;
 	    }
 
-	    Optional<InvHelper.ContainedItem> optFirst = InvHelper.findFirstContained(InvHelper.ofType(first.types), InvHelper.BELT_CONTAINED(gui));
-	    if(firstEquipped == INVALID && !optFirst.isPresent()) {
-		b.cancel(first.name + " not found in belt.");
-		return;
-	    }
-
-	    Optional<InvHelper.ContainedItem> optSecond = InvHelper.findFirstContained(InvHelper.ofType(second.types), InvHelper.BELT_CONTAINED(gui));
-	    if(secondEquipped == INVALID && !optSecond.isPresent()) {
-		b.cancel(second.name + " not found in belt.");
-		return;
-	    }
-
-	    SLOTS firstSlot = firstEquipped == INVALID
-		? secondEquipped == HAND_LEFT ? HAND_RIGHT : HAND_LEFT
-		: INVALID;
-
-	    SLOTS secondSlot = secondEquipped == INVALID
-		? firstEquipped == HAND_RIGHT ? HAND_LEFT : HAND_RIGHT
-		: INVALID;
-
 	    InvHelper.ContainedItem item;
-	    if(firstSlot != INVALID) {
-		item = optFirst.get();
-		item.take();
-		BotUtil.waitHeldChanged(gui);
-		equipory.sendDrop(firstSlot);
-		BotUtil.waitHeldChanged(gui);
-		item.putBack();
-		BotUtil.pause(5);
+	    Optional<InvHelper.ContainedItem> opt = InvHelper.findFirstContained(InvHelper.ofType(first.types), InvHelper.BELT_CONTAINED(gui));
+	    if(firstEquipped == INVALID) {
+		if(opt.isPresent()) {
+		    SLOTS firstSlot = secondEquipped == HAND_LEFT ? HAND_RIGHT : HAND_LEFT;
+		    item = opt.get();
+		    item.take();
+		    BotUtil.waitHeldChanged(gui);
+		    equipory.sendDrop(firstSlot);
+		    BotUtil.waitHeldChanged(gui);
+		    item.putBack();
+		    BotUtil.pause(5);
+		} else {
+		    gui.ui.message(first.name + " not found in belt.", GameUI.MsgType.ERROR);
+		}
 	    }
 
-	    if(secondSlot != INVALID) {
-		item = optSecond.get();
-		item.take();
-		BotUtil.waitHeldChanged(gui);
-		equipory.sendDrop(secondSlot);
-		BotUtil.waitHeldChanged(gui);
-		item.putBack();
+	    opt = InvHelper.findFirstContained(InvHelper.ofType(second.types), InvHelper.BELT_CONTAINED(gui));
+	    if(secondEquipped == INVALID) {
+		if(opt.isPresent()) {
+		    SLOTS secondSlot = firstEquipped == HAND_RIGHT ? HAND_LEFT : HAND_RIGHT;
+		    item = opt.get();
+		    item.take();
+		    BotUtil.waitHeldChanged(gui);
+		    equipory.sendDrop(secondSlot);
+		    BotUtil.waitHeldChanged(gui);
+		    item.putBack();
+		} else if(first != second || firstEquipped != INVALID) {
+		    gui.ui.message(second.name + " not found in belt.", GameUI.MsgType.ERROR);
+		}
 	    }
 	});
 
