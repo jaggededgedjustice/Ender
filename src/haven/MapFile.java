@@ -306,19 +306,6 @@ public class MapFile {
 	    }
 	}
 
-	@Override
-	public boolean equals(Object o) {
-	    if(this == o) return true;
-	    if(o == null || getClass() != o.getClass()) return false;
-	    Marker marker = (Marker) o;
-	    return seg == marker.seg && tc.equals(marker.tc) && nm.equals(marker.nm);
-	}
-
-	@Override
-	public int hashCode() {
-	    return Objects.hash(seg, tc, nm);
-	}
-
 	private static final Map<String, Tex> ntex_cache = new HashMap<>();
 	private static Tex ntex(String nm) {
 	    return ntex_cache.computeIfAbsent(nm, s -> Text.renderstroked(nm, Color.WHITE, Color.BLACK).tex());
@@ -358,15 +345,6 @@ public class MapFile {
 	    this.onmap = onmap;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-	    if(this == o) return true;
-	    if(o == null || getClass() != o.getClass()) return false;
-	    if(!super.equals(o)) return false;
-	    PMarker pMarker = (PMarker) o;
-	    return color.equals(pMarker.color);
-	}
-
 	public String toString() {
 	    return(String.format("#<pmarker \"%s\" %s %d>", nm, color, seq));
 	}
@@ -386,20 +364,6 @@ public class MapFile {
 	    this.res = res;
 	    this.data = data;
 	    questIterator = Utils.circularIterator(questConditions);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-	    if(this == o) return true;
-	    if(o == null || getClass() != o.getClass()) return false;
-	    if(!super.equals(o)) return false;
-	    SMarker sMarker = (SMarker) o;
-	    return Objects.equals(oid, sMarker.oid) && res.equals(sMarker.res);
-	}
-
-	@Override
-	public int hashCode() {
-	    return Objects.hash(super.hashCode(), oid, res);
 	}
 
 	public String toString() {

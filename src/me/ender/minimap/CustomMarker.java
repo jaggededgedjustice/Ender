@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
-import java.util.Objects;
 import java.util.WeakHashMap;
 
 import static haven.MapWnd.MarkerType.*;
@@ -33,29 +32,10 @@ public class CustomMarker extends MapFile.Marker {
 	return 1;
     }
     
-    @Override
-    public boolean equals(Object o) {
-	if(this == o) return true;
-	if(o == null || getClass() != o.getClass()) return false;
-	if(!super.equals(o)) return false;
-	CustomMarker that = (CustomMarker) o;
-	return color.equals(that.color) && res.equals(that.res);
-    }
-
-    
-    
     public GobIcon.Icon icon(OwnerContext owner) {
 	return new CustomIcon(owner, res.get(), nm, color);
     }
     
-//    @Override
-//    public Area area() {
-//	final Image img = image(res, Color.WHITE);
-//	if(img == null) {return null;}
-//	Coord sz = img.tex.sz();
-//	return Area.sized(sz.div(2).inv(), sz);
-//    }
-
     public static Image image(Resource.Spec spec, Color col) {
 	String cacheId = String.format("%s:c[%d]", spec.name, col.getRGB());
 	Image image = cache.get(cacheId);
@@ -77,11 +57,6 @@ public class CustomMarker extends MapFile.Marker {
 	    } catch (Loading ignored) {}
 	}
 	return image;
-    }
-    
-    @Override
-    public int hashCode() {
-	return Objects.hash(super.hashCode(), color, res);
     }
     
     public static boolean equals(CustomMarker a, CustomMarker b) {
