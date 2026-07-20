@@ -858,6 +858,7 @@ public class MapWnd extends WindowX implements Console.Directory {
 		if(colsel != null) {
 		    ui.destroy(colsel);
 		    if(onmapbtn != null) {ui.destroy(onmapbtn);}
+		    onmapbtn = null;
 		    colsel = null;
 		}
 		if(mtrack != null) {
