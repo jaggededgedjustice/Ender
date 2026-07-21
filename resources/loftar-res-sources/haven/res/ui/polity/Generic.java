@@ -5,15 +5,15 @@ import haven.*;
 import java.util.*;
 import static haven.BuddyWnd.width;
 
-@haven.FromResource(name = "ui/polity", version = 11)
+@haven.FromResource(name = "ui/polity", version = 12)
 public class Generic extends Polity {
     private final int my;
 
+    public String type() {return("pol");}
+
     public Generic(String name) {
 	super("Polity", name);
-	Widget prev = add(new Img(CharWnd.catf.render("Polity").tex()), 0, 0);
-	prev = add(new Label(name, nmf), prev.pos("bl").adds(0, 5));
-	prev = add(new AuthMeter(new Coord(width, 20)), prev.pos("bl").adds(0, 2));
+	Widget prev = add(new AuthMeter(new Coord(width, 20)), 0, 0);
 	prev = add(new Label("Members:"), prev.pos("bl").adds(0, 5));
 	prev = add(Frame.with(new MemberList(width - Window.wbox.bisz().x, 7), true), prev.pos("bl").adds(0, 2));
 	pack();
