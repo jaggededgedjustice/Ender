@@ -1264,7 +1264,7 @@ public class MapWnd extends WindowX implements Console.Directory {
     public void importmap() {
 	FilePicker dialog = ui.wnd.toolkit().picker().make(FilePicker.Mode.OPEN, ui.wnd);
 	dialog.filter("Exported Haven map data", "hmap");
-	dialog.show().map(Promise.cnonnull(this::exportmap)).report(ui);
+	dialog.show().map(Promise.cnonnull(this::importmap)).report(ui);
     }
     
     public Coord2d findMarkerPosition(String name) {
