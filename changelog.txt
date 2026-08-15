@@ -1,5 +1,5 @@
-$size[14]{$u{Update for 21.07.26:}
-* fixed map import
+$size[14]{$u{Update for 15.08.26:}
+* fixed map import (was broken by loftar)
 
 $size[14]{$u{Update for 21.07.26:}
   * merged loftar's changes
