@@ -1,5 +1,10 @@
+$size[14]{$u{Update for 19.08.26:}
+  * merged loftar's changes
+  * added option to disable tooltip with terrain type on minimap (Options -> UI -> Show biome tooltip on minimap)
+  * fixed some quest givers (toads) having too big highlight circle
+
 $size[14]{$u{Update for 15.08.26:}
-* fixed map import (was broken by loftar)
+  * fixed map import (was broken by loftar)
 
 $size[14]{$u{Update for 21.07.26:}
   * merged loftar's changes
