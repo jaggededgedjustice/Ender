@@ -327,7 +327,12 @@ public class MapFile {
 	    if(sm.questConditions.isEmpty()) {return;}
 	    try {
 		QuestCondition item = sm.questConditions.get(sm.questConditions.size() - 1);
-		Coord ssz = Utils.imgsz(icon.image());
+		Coord ssz;
+		if(icon instanceof GobIcon.ImageIcon) {
+		    ssz = ((GobIcon.ImageIcon) icon).img.tex.sz().mul(1.25);
+		} else {
+		    ssz = Utils.imgsz(icon.image());
+		}
 		g.chcolor(item.questGiverMarkerColor());
 		g.fellipse(cc, ssz.div(2).sub(1, 1));
 		g.chcolor();
