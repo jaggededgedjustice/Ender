@@ -1267,6 +1267,8 @@ public class MiniMap extends Widget {
 	String tname = null;
 	Object objid = null;
 	Supplier<BufferedImage> objtip = null;
+	if(CFG.MMAP_SHOW_BIOME_TIP.get()) {
+	    // @formatter:off
 	try {
 	    if((grid != null) && (grid.dc != null)) {
 		DataGrid dgrid = grid.gref.get();
@@ -1284,6 +1286,8 @@ public class MiniMap extends Widget {
 	    }
 	} catch(Loading l) {
 	    tname = "...";
+	}
+	    // @formatter:on
 	}
 	Location mloc = xlate(c);
 	if(mloc != null) {
