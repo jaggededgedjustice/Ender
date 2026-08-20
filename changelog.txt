@@ -1,8 +1,11 @@
+$size[14]{$u{Update for 20.08.26:}
+  * added cranefly and dumbledore to critter pickup list
+ 
 $size[14]{$u{Update for 19.08.26:}
   * merged loftar's changes
   * added option to disable tooltip with terrain type on minimap (Options -> UI -> Show biome tooltip on minimap)
   * fixed some quest givers (toads) having too big highlight circle
-
+ 
 $size[14]{$u{Update for 15.08.26:}
   * fixed map import (was broken by loftar)
 
