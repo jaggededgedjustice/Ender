@@ -1,3 +1,6 @@
+$size[14]{$u{Update for 26.08.26:}
+  * merged loftar's changes
+ 
 $size[14]{$u{Update for 23.08.26:}
   * merged loftar's changes
   * added brown kelp to custom radar icons
