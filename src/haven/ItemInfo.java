@@ -26,13 +26,12 @@
 
 package haven;
 
-import haven.res.ui.tt.attrmod.AttrMod;
-import haven.res.ui.tt.attrmod.Entry;
-import haven.res.ui.tt.attrmod.Mod;
-import haven.res.ui.tt.attrmod.resattr;
+import haven.res.ui.tt.attrmod.*;
+import haven.res.ui.tt.attrmod_xf.Transfer;
 import haven.res.ui.tt.ncont.NamedContents;
 import haven.res.ui.tt.slot.Slotted;
 import haven.res.ui.tt.slots_alt.ISlots;
+import haven.res.ui.tt.tool.Tool;
 import haven.res.ui.tt.wear.Wear;
 import me.ender.DamageTip;
 import me.ender.Reflect;
@@ -566,12 +565,13 @@ public abstract class ItemInfo {
 
     private final static String[] mining_tools = {"Pickaxe", "Stone Axe", "Tinker's Throwing Axe", "Metal Axe", "Woodsman's Axe"};
     
-    @SuppressWarnings("unchecked")
-    public static Map<Resource, Integer> getBonuses(List<ItemInfo> infos, Map<String, Glob.CAttr> attrs) {
+    public static Map<Resource, Double> getBonuses(List<ItemInfo> infos, Map<String, Glob.CAttr> attrs) {
 	List<ISlots> slotInfos = ItemInfo.findall(ISlots.class, infos);
 	List<Slotted> gilding = ItemInfo.findall(Slotted.class, infos);
+	List<Tool> tools = ItemInfo.findall(Tool.class, infos);
+
 	List<haven.res.ui.tt.slots.ISlots> oldSlotInfos = ItemInfo.findall(haven.res.ui.tt.slots.ISlots.class, infos);
-	Map<Resource, Integer> bonuses = new HashMap<>();
+	Map<Resource, Double> bonuses = new HashMap<>();
 	try {
 	    for (ISlots islots : slotInfos) {
 		for (ISlots.SItem slot : islots.s) {
@@ -586,26 +586,25 @@ public abstract class ItemInfo {
 	    for (Slotted info : gilding) {
 		parseAttrMods(bonuses, ItemInfo.findall(AttrMod.class, info.sub));
 	    }
+	    for (Tool tool : tools) {
+		parseAttrMods(bonuses, ItemInfo.findall(AttrMod.class, tool.sub));
+	    }
 	    parseAttrMods(bonuses, ItemInfo.findall(AttrMod.class, infos));
 	} catch (Exception ignored) {}
+	
 	Wear wear = ItemInfo.getWear(infos);
 	Pair<Integer, Integer> armor = ItemInfo.getArmor(infos);
 	if(wear != null && armor != null && wear.d < wear.m) {
-	    bonuses.put(armor_hard, armor.a);
-	    bonuses.put(armor_soft, armor.b);
+	    bonuses.put(armor_hard, Double.valueOf(armor.a));
+	    bonuses.put(armor_soft, Double.valueOf(armor.b));
 	}
+	
 	if(attrs != null) {
 	    Glob.CAttr str = attrs.get("str");
 	    Name name = ItemInfo.find(Name.class, infos);
 	    QualityList q = QualityList.make(infos);
 	    if(str != null && name != null && !q.isEmpty() && GobTag.ofType(name.original, mining_tools)) {
-		double miningStrength = str.comp * q.single().value;
-		if(name.original.equals("Pickaxe")) {
-		    miningStrength *= 2;
-		} else if(!name.original.equals("Stone Axe")) {
-		    miningStrength *= 1.5d;
-		}
-		bonuses.put(mining, (int) Math.sqrt(miningStrength));
+		bonuses.put(mining, str.comp * q.single().value);
 	    }
 	}
 	return bonuses;
@@ -630,19 +629,27 @@ public abstract class ItemInfo {
     }
 
 
-    public static void parseAttrMods(Map<Resource, Integer> bonuses, List<AttrMod> infos) {
+    public static void parseAttrMods(Map<Resource, Double> bonuses, List<AttrMod> infos) {
 	for (AttrMod inf : infos) {
 	    for (Entry entry : inf.tab) {
-		if(!(entry instanceof Mod)) {continue;}
-		Mod mod = (Mod) entry;
-		if(!(mod.attr instanceof resattr)) {continue;}
-		Resource attr = ((resattr) mod.attr).res;
-		double value = mod.mod;
-		if(bonuses.containsKey(attr)) {
-		    bonuses.put(attr, bonuses.get(attr) + (int) value);
+		double value;
+		Attribute attr;
+		if(entry instanceof Mod) {
+		    Mod mod = (Mod) entry;
+		    value = mod.mod;
+		    attr = mod.attr;
+		} else if(entry instanceof Transfer) {
+		    Transfer xf = (Transfer) entry;
+		    value = xf.f;
+		    attr = xf.attr;
 		} else {
-		    bonuses.put(attr, (int) value);
+		    continue;
 		}
+		if(!(attr instanceof resattr)) {
+		    continue;
+		}
+		Resource res = ((resattr) attr).res;
+		bonuses.compute(res, (k, v) -> (v != null ? v : 0) + value);
 	    }
 	}
     }

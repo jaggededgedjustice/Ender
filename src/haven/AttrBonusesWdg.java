@@ -1,8 +1,6 @@
 package haven;
 
-import haven.res.ui.tt.attrmod.AttrMod;
-import haven.res.ui.tt.attrmod.Attribute;
-import haven.res.ui.tt.attrmod.Mod;
+import haven.res.ui.tt.attrmod.*;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -21,9 +19,11 @@ public class AttrBonusesWdg extends Widget implements ItemInfo.Owner {
     private boolean needUpdate = false;
     private boolean needBuild = false;
     private boolean needRedraw = false;
+    
+    private static final String MINE_STR_TOOL = "gfx/hud/chr/mine-str";
 
     private WItem[] items;
-    private Map<Resource, Integer> bonuses;
+    private Map<Resource, Double> bonuses;
     private List<ItemInfo> info = null;
     private BufferedImage tip = null;
 
@@ -107,7 +107,7 @@ public class AttrBonusesWdg extends Widget implements ItemInfo.Owner {
 	try {
 	    if(items == null) {return;}
 	    boolean isMe = isMe();
-	    List<Entry<Resource, Integer>> tmp = Arrays.stream(items)
+	    List<Entry<Resource, Double>> tmp = Arrays.stream(items)
 		.filter(Objects::nonNull)
 		.map(wItem -> wItem.item)
 		.distinct()
@@ -116,27 +116,31 @@ public class AttrBonusesWdg extends Widget implements ItemInfo.Owner {
 		.map(Map::entrySet)
 		.flatMap(Collection::stream)
 		.collect(Collectors.toList());
-	    
-	    bonuses = tmp.stream()
-		.filter(e -> e.getKey() != mining)
-		.collect(
-		    Collectors.toMap(
-			Entry::getKey,
-			Entry::getValue,
-			Integer::sum
-		    )
-		);
+
+	    double mineStrMultiplier = 1d;
+	    Map<Resource, Double> map = new HashMap<>();
+	    for (Entry<Resource, Double> e : tmp) {
+		Resource res = e.getKey();
+		Double value = e.getValue();
+		if(MINE_STR_TOOL.equals(res.name)) {
+		    mineStrMultiplier += value;
+		}
+		if(res != mining) {
+		    map.merge(res, value, Double::sum);
+		}
+	    }
+	    bonuses = map;
 	    
 	    if(isMe) {
-		int miningStrength = 0;
-		for (Entry<Resource, Integer> e : tmp) {
-		    int value;
+		double miningStrength = 0;
+		for (Entry<Resource, Double> e : tmp) {
+		    double value;
 		    if(e.getKey() == mining && miningStrength < (value = e.getValue())) {
 			miningStrength = value;
 		    }
 		}
 		if(miningStrength > 0) {
-		    bonuses.put(mining, miningStrength);
+		    bonuses.put(mining, Math.sqrt(miningStrength * mineStrMultiplier));
 		}
 		addDerivedStat(detection, "prc", "explore");
 		addDerivedStat(sneak, "int", "stealth");
@@ -145,7 +149,7 @@ public class AttrBonusesWdg extends Widget implements ItemInfo.Owner {
 	    needBuild = true;
 	} catch (Loading ignored) {}
     }
-    
+
     private Map<String, Glob.CAttr> cattr() {
 	if(ui != null) {
 	    return ui.sess.glob.cattr;
@@ -159,7 +163,7 @@ public class AttrBonusesWdg extends Widget implements ItemInfo.Owner {
 	Glob.CAttr a1 = cattr.get(attr1);
 	Glob.CAttr a2 = cattr.get(attr2);
 	if(a1 != null && a2 != null) {
-	    bonuses.put(res, a1.comp * a2.comp);
+	    bonuses.put(res, (double) (a1.comp * a2.comp));
 	}
     }
     
@@ -179,17 +183,24 @@ public class AttrBonusesWdg extends Widget implements ItemInfo.Owner {
 	} catch (Loading ignored) {}
     }
 
-    private ItemInfo make(Collection<Entry<Resource, Integer>> values) {
+    private haven.res.ui.tt.attrmod.Entry getEntry(Resource res, double value) {
+	if(MINE_STR_TOOL.equals(res.name)) {
+	    return new Mod(new normattr(res), value);
+	}
+	return new Mod(Attribute.get(res), value);
+    }
+
+    private ItemInfo make(Collection<Entry<Resource, Double>> values) {
 	if(values.isEmpty()) {
 	    return null;
 	}
 	
 	return new AttrMod(this, values.stream()
-	    .map(m -> new Mod(Attribute.get(m.getKey()), m.getValue()))
+	    .map(m -> getEntry(m.getKey(), m.getValue()))
 	    .collect(Collectors.toList()));
     }
 
-    private int BY_PRIORITY(Entry<Resource, Integer> o1, Entry<Resource, Integer> o2) {
+    private int BY_PRIORITY(Entry<Resource, Double> o1, Entry<Resource, Double> o2) {
 	Resource r1 = o1.getKey();
 	Resource r2 = o2.getKey();
 

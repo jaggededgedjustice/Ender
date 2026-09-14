@@ -512,7 +512,15 @@ public class CharWnd extends WindowX {
 	    b1 = skillIndex(r1);
 	    b2 = skillIndex(r2);
 	    if(b1 == b2) {
-		return r1.name.compareTo(r2.name);
+		Resource.Tooltip t1 = r1.layer(Resource.tooltip);
+		Resource.Tooltip t2 = r2.layer(Resource.tooltip);
+		String n1 = t1 == null ? r1.name : t1.t;
+		String n2 = t2 == null ? r2.name : t2.t;
+		b1 = n1.compareTo(n2);
+		if(b1 == 0) {
+		    return r1.name.compareTo(r2.name);
+		}
+		return b1;
 	    } else {
 		return Integer.compare(b1, b2);
 	    }
