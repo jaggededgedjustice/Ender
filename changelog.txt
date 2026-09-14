@@ -1,3 +1,8 @@
+$size[14]{$u{Update for 14.09.26:}
+  * merged loftar's changes
+  * fixed tool stats not shown in Equipment Bonuses
+  * do not mark mammoth skull as aggressive animal
+ 
 $size[14]{$u{Update for 02.09.26:}
   * merged loftar's changes
   * added marsh and marsh water to tle highlight
